@@ -24,6 +24,7 @@ class BackspaceController(
     private val onStageUnits: (Int, Boolean) -> Unit,
     /** Pointer lifted with a staged span: delete that span. */
     private val onCommitStaged: () -> Unit,
+    private val onRepeatVibrate: () -> Unit = {},
 ) {
     /**
      * Stage single characters instead of whole words. Pushed from
@@ -40,6 +41,7 @@ class BackspaceController(
         override fun run() {
             repeating = true
             onDeleteChar()
+            onRepeatVibrate()
             handler.postDelayed(this, REPEAT_MS)
         }
     }

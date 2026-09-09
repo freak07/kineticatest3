@@ -346,6 +346,9 @@ class KeyboardView @JvmOverloads constructor(
         onDeleteChar = { listener?.onDeleteChar() },
         onStageUnits = { units, chars -> listener?.onStageDelete(units, chars) },
         onCommitStaged = { listener?.onCommitStagedDelete() },
+        onRepeatVibrate = {
+            listener?.onKeyPressFeedback()
+        }
     )
     private var spacePointer = -1
     private var backspacePointer = -1
