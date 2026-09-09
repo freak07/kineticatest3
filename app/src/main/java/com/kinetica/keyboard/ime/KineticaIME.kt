@@ -2073,14 +2073,19 @@ class KineticaIME : InputMethodService(), GestureEngine.Listener, WordComposer.C
     private fun onEnter() {
         cancelAutospace()
         finalizePendingWord()
-        if (editorState.multiline ||
-            editorState.actionId == EditorInfo.IME_ACTION_NONE ||
-            editorState.actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-        ) {
-            commitTracked("\n")
+        
+        val editorInfo = currentInputEditorInfo
+        val action = editorInfo?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_UNSPECIFIED
+        val hasNoEnterAction = (editorInfo?.imeOptions?.and(EditorInfo.IME_FLAG_NO_ENTER_ACTION) ?: 0) != 0
+
+        // If the app specifies an explicit action (like Search, Go, Done) and doesn't block it
+        if (!hasNoEnterAction && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
+            currentInputConnection?.performEditorAction(action)
         } else {
-            ich.performEditorAction(editorState.actionId)
+            // Fallback for standard text fields (inserts a newline)
+            commitTracked("\n")
         }
+        
         updateAutoShift()
     }
 
