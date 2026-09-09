@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -232,6 +233,9 @@ class KeyboardView @JvmOverloads constructor(
         onDeleteChar = { listener?.onDeleteChar() },
         onStageUnits = { units, chars -> listener?.onStageDelete(units, chars) },
         onCommitStaged = { listener?.onCommitStagedDelete() },
+        onRepeatVibrate = {
+            listener?.onKeyPressFeedback()
+        }
     )
     private var spacePointer = -1
     private var backspacePointer = -1
