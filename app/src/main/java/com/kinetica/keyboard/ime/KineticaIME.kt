@@ -1440,9 +1440,10 @@ class KineticaIME : InputMethodService(), GestureEngine.Listener, WordComposer.C
      * ordering hazard item 46 was written about.
      */
     private fun updateBarWordPending() {
-        suggestionBar?.wordPending =
-            tentativeLength > 0 || composer?.hasPendingWord == true
-    }
+    val isPending = tentativeLength > 0 || composer?.hasPendingWord == true
+    suggestionBar?.wordPending = isPending
+    keyboardView?.wordPending = isPending
+	}
 
     /** Current candidates -> suggestion bar, with personal-weight badges. */
     private fun pushSuggestions() {

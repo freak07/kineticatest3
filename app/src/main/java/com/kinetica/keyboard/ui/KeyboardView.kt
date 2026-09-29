@@ -129,6 +129,9 @@ class KeyboardView @JvmOverloads constructor(
     /** Extra trail gate: also cleared in private (password) fields. */
     var trailsEnabled = true
 
+    /** Indicates if a word is currently being composed. */
+	var wordPending: Boolean = false
+
     var trailBaseHue: Float
         get() = trailRenderer.baseHue
         set(value) {
@@ -824,10 +827,22 @@ class KeyboardView @JvmOverloads constructor(
     )
 
     private fun scheduleHold(pid: Int, keyIdx: Int) {
-        pendingHoldPid = pid
-        pendingHoldKeyIdx = keyIdx
-        holdHandler.postDelayed(holdRunnable, longPressMs)
+    pendingHoldPid = pid
+    pendingHoldKeyIdx = keyIdx
+
+    // Check if another pointer is actively routed to the GestureEngine
+    val isActivelySwiping = routeByPointer.any { it == ROUTE_ENGINE }
+
+    // Enforce a safe minimum threshold (e.g., 300ms) if the user is
+    // in the middle of a word or another finger is mid-swipe.
+    val timeout = if ((wordPending || isActivelySwiping) && longPressMs < 300L) {
+        300L
+    } else {
+        longPressMs
     }
+
+    holdHandler.postDelayed(holdRunnable, timeout)
+	}
 
     private fun cancelHold() {
         if (pendingHoldPid != -1) {
