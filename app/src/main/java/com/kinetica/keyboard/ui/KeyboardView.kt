@@ -1127,6 +1127,14 @@ class KeyboardView @JvmOverloads constructor(
                     // Travel past the tap threshold cancels the hold timer, so a committed swipe
                     // cannot get here; the check guards against event-order races.
                     if (engine?.isSwipeCommitted(pid) == true) return
+                    
+                    // NEW: If another thumb is actively swiping, block the long press
+                    // so this thumb can start its gesture without interruption.
+                    val isAnotherSwipeActive = (0 until MAX_POINTERS).any { p ->
+                        p != pid && routeByPointer[p] == ROUTE_ENGINE && engine?.isSwipeCommitted(p) == true
+                    }
+                    if (key.isLetter && isAnotherSwipeActive) return
+                    
                     engine?.cancelPointer(pid)
                 }
                 routeByPointer[pid] = ROUTE_ALT_POPUP
