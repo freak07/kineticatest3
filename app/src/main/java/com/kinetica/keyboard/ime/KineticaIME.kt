@@ -1385,12 +1385,6 @@ class KineticaIME : InputMethodService(), GestureEngine.Listener, WordComposer.C
     // -------------------------------------------------------- key handling
 
     private val keyboardListener = object : KeyboardView.Listener {
-
-        override fun isSwipeAutospacePending(): Boolean {
-            // Checks if Kinetica's native autospace timer is ticking for a swipe
-            return autospacePending && composer?.hasSwipeToken() == true
-        }
-
         override fun onKeyTap(key: Key) {
             when (key.type) {
                 KeyType.CHAR -> onPunctuation(key.output)
