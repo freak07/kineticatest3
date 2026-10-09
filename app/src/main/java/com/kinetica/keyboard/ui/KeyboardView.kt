@@ -120,6 +120,9 @@ class KeyboardView @JvmOverloads constructor(
 
         /** Spacebar tapped twice in quick succession: end the sentence. Sent only while the setting is on. */
         fun onDoubleSpace()
+
+        /** Whether the keyboard is waiting to automatically space a swiped word. */
+        fun isSwipeAutospacePending(): Boolean
     }
 
     var listener: Listener? = null
@@ -956,6 +959,8 @@ class KeyboardView @JvmOverloads constructor(
         downTimeByPointer[pid] = t
         val key = if (keyIdx != -1) l.keys[keyIdx] else null
 
+        val blockLongPress = key?.isLetter == true && listener?.isSwipeAutospacePending() == true
+
         if (keyIdx != -1) listener?.onKeyPressFeedback()
 
         // The symbol pages arm from their page key, as the letters do from ?123.
@@ -1008,7 +1013,9 @@ class KeyboardView @JvmOverloads constructor(
             (key.type == KeyType.MODE_SYMBOLS || key.alternates.isNotEmpty())
         // A chord candidate's own menu would open mid-chord and cancel the key.
         if (holdCapable && chord == null && popup == null && pendingHoldPid == -1) {
-            scheduleHold(pid, keyIdx)
+            if (!blockLongPress) {
+                scheduleHold(pid, keyIdx)
+            }
         }
         if (keyIdx != -1) {
             pressedKeys.add(keyIdx)
