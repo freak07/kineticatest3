@@ -73,19 +73,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystorePropsFile.exists()) {
-                signingConfig signingConfigs.release
-            }
+            signingConfig signingConfigs.release
+			} else {
+            signingConfig signingConfigs.debug
+			}
         }
         // A second application id, so the developer build installs beside the real
         // app with its own data and cannot be mistaken for a published build. It is
         // also the only build that writes a decode trace (TraceRecorder).
         debug {
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-dev'
             // Not debuggable, so the decode times a trace records are the phone's real cost:
             // ART runs a debuggable build about twice as slow. The trace sink comes from the
             // debug source set and needs no flag.
-            debuggable false
+            debuggable !project.hasProperty('disableDebug')
             signingConfig signingConfigs.debug
         }
     }
